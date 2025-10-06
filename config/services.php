@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'miapi' => [
+        'url' => env('MIAPI_URL', 'https://api.mecubro.com/api/v4'),
+        'application_id' => env('MIAPI_APPLICATION_ID'),
+        'email' => env('MIAPI_EMAIL'),
+        'password' => env('MIAPI_PASSWORD'),
+    ],
+
 ];

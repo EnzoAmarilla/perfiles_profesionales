@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'profile_picture',
+        'description',
+        'profile_user_id'
     ];
 
     /**
@@ -45,4 +49,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function profile()
+    {
+        return $this->belongsTo(ProfileUser::class, 'profile_user_id');
+    }
+
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class);
+    }
+
 }
