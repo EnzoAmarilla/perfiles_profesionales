@@ -16,7 +16,7 @@ Route::get('/provinces/{province}/localities', [LocalityController::class, 'byPr
 // Route::resource('users', UserController::class);
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
