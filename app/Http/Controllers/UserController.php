@@ -12,13 +12,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with(['profile', 'activities', 'locality.province'])->get();
+        $users = User::with(['userType', 'activities', 'locality.province'])->get();
         return response()->json(["data" => $users]);
     }
 
     public function show(User $user)
     {
-        return response()->json($user->load(['profile', 'activities', 'locality.province']));
+        return response()->json($user->load(['userType', 'activities', 'locality.province']));
     }
 
     public function store(Request $request)
@@ -30,7 +30,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:30',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
-            'profile_user_id' => 'required|exists:profiles_users,id',
+            'user_type_id' => 'required|exists:user_types,id',
             'locality_id' => 'nullable|exists:localities,id',
             'activities' => 'nullable|array',
             'activities.*' => 'exists:activities,id',
@@ -46,7 +46,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Usuario creado correctamente',
-            'data' => $user->load(['profile', 'activities', 'locality.province']),
+            'data' => $user->load(['userType', 'activities', 'locality.province']),
         ], 201);
     }
 
@@ -59,7 +59,7 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:30',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
-            'profile_user_id' => 'sometimes|exists:profiles_users,id',
+            'user_type_id' => 'sometimes|exists:user_types,id',
             'locality_id' => 'nullable|exists:localities,id',
             'activities' => 'nullable|array',
             'activities.*' => 'exists:activities,id',
@@ -79,7 +79,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'Usuario actualizado correctamente',
-            'data' => $user->load(['profile', 'activities', 'locality.province']),
+            'data' => $user->load(['userType', 'activities', 'locality.province']),
         ]);
     }
 

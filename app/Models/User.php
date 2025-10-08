@@ -25,7 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'phone',
         'profile_picture',
         'description',
-        'profile_user_id',
+        'user_type_id',
         'locality_id',
     ];
 
@@ -63,11 +63,6 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
     
-    public function profile()
-    {
-        return $this->belongsTo(ProfileUser::class, 'profile_user_id');
-    }
-
     public function activities()
     {
         return $this->belongsToMany(Activity::class);
@@ -77,4 +72,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Locality::class);
     }
+
+    public function userType()
+    {
+        return $this->belongsTo(UserType::class);
+    }
+
 }

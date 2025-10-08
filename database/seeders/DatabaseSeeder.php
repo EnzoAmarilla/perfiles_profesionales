@@ -20,8 +20,8 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Administrador',
                 'password' => Hash::make('123456'),
                 'phone' => '1122334455',
-                'profile_user_id' => 1, // ⚠️ Ajustá según exista el perfil admin
-                'locality_id' => 1, // ⚠️ Ajustá según exista el perfil admin
+                'user_type_id' => 1,
+                'locality_id' => 1,
             ]
         );
 
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             ProvincesSeeder::class,
             LocalitiesSeeder::class,
             ActivitiesSeeder::class,
-            ProfileUserSeeder::class,
+            UserTypeSeeder::class,
         ]);
     }
 }

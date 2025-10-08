@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('user_types', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('description')->nullable();
+            $table->boolean('disabled')->default(false);
+            $table->timestamps();
+        });
+
         Schema::table('users', function (Blueprint $table) {
-             $table->foreignId('profile_user_id')
-                  ->nullable()
-                  ->after('description')
-                  ->constrained('profiles_users')
-                  ->nullOnDelete();
+            $table->foreignId('user_type_id')->nullable()->constrained('user_types')->nullOnDelete();
         });
     }
 
@@ -26,8 +30,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['profile_user_id']);
-            $table->dropColumn('profile_user_id');
+            $table->dropConstrainedForeignId('user_type_id');
         });
+
+        Schema::dropIfExists('user_types');
     }
 };

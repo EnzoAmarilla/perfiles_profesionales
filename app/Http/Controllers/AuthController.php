@@ -19,7 +19,7 @@ class AuthController extends Controller
             'phone' => 'nullable|string|max:30',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
-            'profile_user_id' => 'required|exists:profiles_users,id',
+            'user_type_id' => 'required|exists:user_types,id',
             'locality_id' => 'nullable|exists:localities,id',
         ]);
 
@@ -30,7 +30,7 @@ class AuthController extends Controller
             'phone' => $validated['phone'] ?? null,
             'profile_picture' => $validated['profile_picture'] ?? null,
             'description' => $validated['description'] ?? null,
-            'profile_user_id' => $validated['profile_user_id'],
+            'user_type_id' => $validated['user_type_id'],
             'locality_id' => $validated['locality_id'] ?? null,
         ]);
 
