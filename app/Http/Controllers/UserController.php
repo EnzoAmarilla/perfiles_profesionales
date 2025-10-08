@@ -12,13 +12,13 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with(['profile', 'activities'])->get();
+        $users = User::with(['profile', 'activities', 'locality.province'])->get();
         return response()->json(["data" => $users]);
     }
 
     public function show(User $user)
     {
-        return response()->json($user->load(['profile', 'activities']));
+        return response()->json($user->load(['profile', 'activities', 'locality.province']));
     }
 
     public function store(Request $request)
@@ -31,6 +31,7 @@ class UserController extends Controller
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
             'profile_user_id' => 'required|exists:profiles_users,id',
+            'locality_id' => 'nullable|exists:localities,id',
             'activities' => 'nullable|array',
             'activities.*' => 'exists:activities,id',
         ]);
@@ -45,7 +46,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Usuario creado correctamente',
-            'data' => $user->load(['profile', 'activities']),
+            'data' => $user->load(['profile', 'activities', 'locality.province']),
         ], 201);
     }
 
@@ -59,6 +60,7 @@ class UserController extends Controller
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
             'profile_user_id' => 'sometimes|exists:profiles_users,id',
+            'locality_id' => 'nullable|exists:localities,id',
             'activities' => 'nullable|array',
             'activities.*' => 'exists:activities,id',
         ]);
@@ -77,7 +79,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'Usuario actualizado correctamente',
-            'data' => $user->load(['profile', 'activities']),
+            'data' => $user->load(['profile', 'activities', 'locality.province']),
         ]);
     }
 

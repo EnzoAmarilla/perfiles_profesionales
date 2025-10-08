@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -24,7 +25,8 @@ class User extends Authenticatable
         'phone',
         'profile_picture',
         'description',
-        'profile_user_id'
+        'profile_user_id',
+        'locality_id',
     ];
 
     /**
@@ -50,6 +52,17 @@ class User extends Authenticatable
         ];
     }
 
+    // Métodos requeridos por JWT
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+    
     public function profile()
     {
         return $this->belongsTo(ProfileUser::class, 'profile_user_id');
@@ -60,4 +73,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Activity::class);
     }
 
+    public function locality()
+    {
+        return $this->belongsTo(Locality::class);
+    }
 }
