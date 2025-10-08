@@ -42,7 +42,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => (int) auth('api')->factory()->getTTL() * 60,
-            'user' => $user->load(['profile', 'locality']),
+            'user' => $user->load(['userType', 'locality']),
         ], 201);
     }
 
@@ -62,7 +62,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(auth('api')->user()->load(['profile', 'locality']));
+        return response()->json(auth('api')->user()->load(['userType', 'locality']));
     }
 
     public function logout()
@@ -79,7 +79,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $expire_in * 60, // segundos,
-            'user' => auth('api')->user()->load(['profile', 'locality'])
+            'user' => auth('api')->user()->load(['userType', 'locality'])
         ]);
     }
 }
