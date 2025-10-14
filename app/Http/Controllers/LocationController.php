@@ -68,7 +68,7 @@ class LocationController extends Controller
      */
     public function getZipCodes(Request $request)
     {
-        $query = ZipCode::query();
+        $query = ZipCode::with('locality');
 
         if ($request->filled('locality_id')) {
             $query->where('locality_id', $request->locality_id);
