@@ -9,10 +9,17 @@ class UserTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        UserType::insert([
+        $types = [
             ['name' => 'Administrador', 'description' => 'Usuario con control total del sistema'],
             ['name' => 'Profesional', 'description' => 'Prestador de servicios o trabajador'],
             ['name' => 'Cliente', 'description' => 'Usuario que solicita servicios'],
-        ]);
+        ];
+
+        foreach ($types as $type) {
+            UserType::updateOrCreate(
+                ['name' => $type['name']], // condición única
+                ['description' => $type['description']] // valores a actualizar
+            );
+        }
     }
 }
