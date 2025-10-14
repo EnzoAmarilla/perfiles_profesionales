@@ -26,11 +26,9 @@ class DatabaseSeeder extends Seeder
         );
 
         $this->call([
-            CountriesSeeder::class,
-            ProvincesSeeder::class,
-            LocalitiesSeeder::class,
             ActivitiesSeeder::class,
             UserTypeSeeder::class,
+            DocumentTypeSeeder::class,
         ]);
     }
 }

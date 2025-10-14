@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DocumentType;
 use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -87,5 +89,17 @@ class UserController extends Controller
     {
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado correctamente']);
+    }
+
+    public function getUserTypes()
+    {
+        $types = UserType::where('disabled', false)->get(['id', 'name', 'description']);
+        return response()->json(["data" => $types]);
+    }
+
+    public function getDocumentTypes()
+    {
+        $types = DocumentType::where('disabled', false)->get(['id', 'code', 'name', 'description']);
+        return response()->json(["data" => $types]);
     }
 }
