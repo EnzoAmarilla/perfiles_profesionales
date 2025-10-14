@@ -29,7 +29,6 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'phone' => 'nullable|string|max:30',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
             'user_type_id' => 'required|exists:user_types,id',
@@ -40,7 +39,7 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create($validated);
+        $user = User::create($request->all());
 
         if (!empty($validated['activities'])) {
             $user->activities()->sync($validated['activities']);
@@ -58,7 +57,6 @@ class UserController extends Controller
             'name' => 'sometimes|string|max:255',
             'email' => ['sometimes','email',Rule::unique('users')->ignore($user->id)],
             'password' => 'sometimes|string|min:6|nullable',
-            'phone' => 'nullable|string|max:30',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
             'user_type_id' => 'sometimes|exists:user_types,id',
@@ -73,7 +71,7 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
-        $user->update($validated);
+        $user->update($request->all());
 
         if (isset($validated['activities'])) {
             $user->activities()->sync($validated['activities']);
