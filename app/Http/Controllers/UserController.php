@@ -86,7 +86,6 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'profile_picture' => 'nullable|string',
@@ -114,7 +113,6 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
             'email' => ['sometimes','email',Rule::unique('users')->ignore($user->id)],
             'password' => 'sometimes|string|min:6|nullable',
             'profile_picture' => 'nullable|string',
