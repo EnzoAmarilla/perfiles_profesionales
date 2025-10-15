@@ -12,10 +12,70 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     $users = User::with(['userType', 'activities', 'locality.province'])->get();
+    //     return response()->json(["data" => $users]);
+    // }
+
+    public function index(Request $request)
     {
-        $users = User::with(['userType', 'activities', 'locality.province'])->get();
-        return response()->json(["data" => $users]);
+        $query = User::with(['userType', 'activities', 'locality.province']);
+
+        // Filtro por nombre o apellido
+        if ($request->filled('name')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->name . '%')
+                ->orWhere('last_name', 'like', '%' . $request->name . '%');
+            });
+        }
+
+        // Filtro por email
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+
+        // Filtro por rol (user_type_id)
+        if ($request->filled('user_type_id')) {
+            $query->where('user_type_id', $request->user_type_id);
+        }
+
+        // Filtro por provincia
+        if ($request->filled('province_id')) {
+            $query->whereHas('locality.state', function ($q) use ($request) {
+                $q->where('id', $request->province_id);
+            });
+        }
+
+        // Filtro por localidad
+        if ($request->filled('locality_id')) {
+            $query->where('locality_id', $request->locality_id);
+        }
+
+        // Filtro por estado (si existe campo status)
+        // if ($request->filled('status')) {
+        //     $query->where('status', $request->status);
+        // }
+
+        // Filtro por fecha de creación (rango)
+        if ($request->filled('created_from')) {
+            $query->whereDate('created_at', '>=', $request->created_from);
+        }
+        if ($request->filled('created_to')) {
+            $query->whereDate('created_at', '<=', $request->created_to);
+        }
+
+        // Filtro por último acceso (si tenés campo last_login_at)
+        // if ($request->filled('last_login')) {
+            // $query->whereNotNull('last_login_at');
+            // Ejemplo: last_login = "recent" o algo similar
+        // }
+
+        $users = $query->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'data' => $users
+        ]);
     }
 
     public function show(User $user)
