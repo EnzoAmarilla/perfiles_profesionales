@@ -49,7 +49,7 @@ class LocationController extends Controller
      */
     public function getLocalities(Request $request)
     {
-        $query = Locality::query();
+        $query = Locality::with(['zipCodes', 'state.country']);
 
         if ($request->filled('state_id')) {
             $query->where('state_id', $request->state_id);
@@ -59,7 +59,7 @@ class LocationController extends Controller
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        $localities = $query->orderBy('name')->get(['id', 'name', 'state_id']);
+        $localities = $query->orderBy('name')->get();
         return response()->json(["data" => $localities]);
     }
 
