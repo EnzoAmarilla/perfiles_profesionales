@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::with(['userType', 'activities', 'locality.province']);
+        $query = User::with(['userType', 'activities', 'locality.state']);
 
         // Filtro por nombre o apellido
         if ($request->filled('name')) {
