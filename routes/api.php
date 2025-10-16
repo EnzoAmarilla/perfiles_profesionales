@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileUserController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\ReviewController;
 
 Route::get('/user-types', [UserController::class, 'getUserTypes']);
 Route::get('/document-types', [UserController::class, 'getDocumentTypes']);
@@ -32,6 +33,14 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [QuestionController::class, 'show']);
         Route::put('/{id}', [QuestionController::class, 'update']);
         Route::delete('/{id}', [QuestionController::class, 'destroy']);
+    });
+
+    Route::prefix('reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'index']);
+        Route::post('/', [ReviewController::class, 'store']);
+        Route::get('/{id}', [ReviewController::class, 'show']);
+        Route::put('/{id}', [ReviewController::class, 'update']);
+        Route::delete('/{id}', [ReviewController::class, 'destroy']);
     });
 
 });
