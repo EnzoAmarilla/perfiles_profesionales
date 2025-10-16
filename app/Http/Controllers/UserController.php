@@ -20,7 +20,9 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::with(['userType', 'activities', 'locality.state']);
+        $query = User::with(['userType', 'activities', 'locality.state'])
+                ->withCount('reviews')            // cantidad total de reviews
+                ->withAvg('reviews', 'value');    // promedio de valoraciones (campo value en la tabla reviews);
 
         // Filtro por nombre o apellido
         if ($request->filled('name')) {
@@ -71,7 +73,14 @@ class UserController extends Controller
             // Ejemplo: last_login = "recent" o algo similar
         // }
 
-        $users = $query->orderBy('id', 'desc')->get();
+        $users = $query->orderBy('id', 'desc')->get()->map(function ($user) {
+            // Redondeamos el promedio a un solo decimal (ej: 4.2)
+            $user->reviews_avg_value = $user->reviews_avg_value 
+                ? number_format($user->reviews_avg_value, 1) 
+                : null;
+            return $user;
+        });
+
 
         return response()->json([
             'data' => $users
