@@ -60,6 +60,7 @@ class DatabaseSeeder extends Seeder
             ActivitiesSeeder::class,
             UserTypeSeeder::class,
             DocumentTypeSeeder::class,
+            ProfessionalSeeder::class,
         ]);
     }
 }

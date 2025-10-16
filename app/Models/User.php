@@ -31,7 +31,6 @@ class User extends Authenticatable implements JWTSubject
         'country_phone',
         'area_code',
         'phone_number',
-        'phone',
         'profile_picture',
         'description',
         'user_type_id',
