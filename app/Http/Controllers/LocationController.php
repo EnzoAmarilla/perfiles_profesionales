@@ -91,7 +91,20 @@ class LocationController extends Controller
             $query->where('code', 'like', '%' . $request->code . '%');
         }
 
-        $zipCodes = $query->orderBy('code')->get(['id', 'code', 'locality_id']);
-        return response()->json(["data" => $zipCodes]);
+        // --- PAGINACIÓN ---
+        $page  = $request->get('page', 1);     // página actual (por defecto 1)
+        $limit = $request->get('limit', 10);   // cantidad por página (por defecto 20)
+
+        $zipCodes = $query->orderBy('code')->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => $zipCodes->items(),
+            'pagination' => [
+                'current_page' => $zipCodes->currentPage(),
+                'per_page' => $zipCodes->perPage(),
+                'total' => $zipCodes->total(),
+                'last_page' => $zipCodes->lastPage(),
+            ]
+        ]);
     }
 }
