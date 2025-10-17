@@ -63,7 +63,14 @@ class LocationController extends Controller
         $page  = $request->get('page');     // página actual (por defecto 1)
         $limit = $request->get('limit');   // cantidad por página (por defecto 20)
 
-        $localities = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
+        $localities = $query->orderBy('name');      
+
+        if($page && $limit){
+            $localities = $localities->paginate($limit, ['*'], 'page', $page);
+        }else{
+            $localities = $localities->get();
+            return response()->json(["data" => $localities]);
+        }
 
         return response()->json([
             'data' => $localities->items(),
