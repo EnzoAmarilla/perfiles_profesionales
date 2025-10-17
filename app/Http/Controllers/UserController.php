@@ -132,13 +132,19 @@ class UserController extends Controller
             'activities.*' => 'exists:activities,id',
         ]);
 
-        if (isset($validated['password']) && $validated['password'] && $validated['password'] != "") {
+        if (isset($validated['password']) && $validated['password']) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
         }
 
-        $user->update($request->all());
+        $data = $request->all();
+
+        if($validated['password'] == ""){
+            unset($data['password']);
+        }
+
+        $user->update($data);
 
         if (isset($validated['activities'])) {
             $user->activities()->sync($validated['activities']);
