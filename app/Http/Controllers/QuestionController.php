@@ -28,6 +28,10 @@ class QuestionController extends Controller
             });
         }
 
+        // if ($request->filled('message')) {
+        //     $query->where('message', 'like', '%' . $request->message . '%');
+        // }
+
         return response()->json([
             'data' => $query->orderBy('created_at', 'desc')->get()
         ]);

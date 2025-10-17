@@ -74,8 +74,8 @@ class UserController extends Controller
         // }
 
         // --- PAGINACIÓN ---
-        $page  = $request->get('page', 1);     // página actual (default 1)
-        $limit = $request->get('limit', 10);   // cantidad por página (default 10)
+        $page  = $request->get('page');     // página actual (default 1)
+        $limit = $request->get('limit');   // cantidad por página (default 10)
 
         $users = $query->orderBy('id', 'desc')->paginate($limit, ['*'], 'page', $page);
 
@@ -101,7 +101,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return response()->json($user->load(['userType', 'activities', 'locality.province']));
+        return response()->json(["data" => $user->load(['userType', 'activities', 'locality.province'])]);
     }
 
     public function store(Request $request)
