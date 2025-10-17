@@ -7,9 +7,29 @@ use Illuminate\Http\Request;
 
 class ActivityController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(["data" => Activity::all()]);
+        $query = Activity::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+
+        // Paginación con valores por defecto
+        $page  = $request->get('page', 1);
+        $limit = $request->get('limit', 20);
+
+        $activities = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => $activities->items(),
+            'pagination' => [
+                'current_page' => $activities->currentPage(),
+                'per_page' => $activities->perPage(),
+                'total' => $activities->total(),
+                'last_page' => $activities->lastPage(),
+            ]
+        ]);
     }
 
     public function store(Request $request)

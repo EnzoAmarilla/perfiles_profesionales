@@ -59,8 +59,21 @@ class LocationController extends Controller
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        $localities = $query->orderBy('name')->get();
-        return response()->json(["data" => $localities]);
+        // --- PAGINACIÓN ---
+        $page  = $request->get('page', 1);     // página actual (por defecto 1)
+        $limit = $request->get('limit', 20);   // cantidad por página (por defecto 20)
+
+        $localities = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
+
+        return response()->json([
+            'data' => $localities->items(),
+            'pagination' => [
+                'current_page' => $localities->currentPage(),
+                'per_page' => $localities->perPage(),
+                'total' => $localities->total(),
+                'last_page' => $localities->lastPage(),
+            ]
+        ]);
     }
 
     /**
