@@ -123,7 +123,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'email' => ['sometimes','email',Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|string|min:6|nullable',
+            'password' => 'nullable|string|min:6',
             'profile_picture' => 'nullable|string',
             'description' => 'nullable|string',
             'user_type_id' => 'sometimes|exists:user_types,id',
