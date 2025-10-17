@@ -132,7 +132,7 @@ class UserController extends Controller
             'activities.*' => 'exists:activities,id',
         ]);
 
-        if (isset($validated['password']) && $validated['password']) {
+        if (isset($validated['password']) && $validated['password'] && $validated['password'] != "") {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
