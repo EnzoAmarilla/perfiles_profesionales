@@ -77,7 +77,15 @@ class UserController extends Controller
         $page  = $request->get('page');     // página actual (default 1)
         $limit = $request->get('limit');   // cantidad por página (default 10)
 
-        $users = $query->orderBy('id', 'desc')->paginate($limit, ['*'], 'page', $page);
+        
+        $users = $query->orderBy('id', 'desc');
+
+        if($page && $limit){
+            $users = $users->paginate($limit, ['*'], 'page', $page);
+        }else{
+            $users = $users->get();
+            return response()->json(["data" => $users]);
+        }
 
         // Redondeamos el promedio de reviews en cada item
         $users->getCollection()->transform(function ($user) {
