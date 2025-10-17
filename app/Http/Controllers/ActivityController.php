@@ -17,7 +17,7 @@ class ActivityController extends Controller
 
         // Paginación con valores por defecto
         $page  = $request->get('page', 1);
-        $limit = $request->get('limit', 20);
+        $limit = $request->get('limit', 10);
 
         $activities = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
 
