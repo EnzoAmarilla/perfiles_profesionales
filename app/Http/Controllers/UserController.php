@@ -73,18 +73,30 @@ class UserController extends Controller
             // Ejemplo: last_login = "recent" o algo similar
         // }
 
-        $users = $query->orderBy('id', 'desc')->get()->map(function ($user) {
-            // Redondeamos el promedio a un solo decimal (ej: 4.2)
-            $user->reviews_avg_value = $user->reviews_avg_value 
-                ? number_format($user->reviews_avg_value, 1) 
+        // --- PAGINACIÓN ---
+        $page  = $request->get('page', 1);     // página actual (default 1)
+        $limit = $request->get('limit', 10);   // cantidad por página (default 10)
+
+        $users = $query->orderBy('id', 'desc')->paginate($limit, ['*'], 'page', $page);
+
+        // Redondeamos el promedio de reviews en cada item
+        $users->getCollection()->transform(function ($user) {
+            $user->reviews_avg_value = $user->reviews_avg_value
+                ? number_format($user->reviews_avg_value, 1)
                 : null;
             return $user;
         });
 
-
         return response()->json([
-            'data' => $users
+            'data' => $users->items(),
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'per_page' => $users->perPage(),
+                'total' => $users->total(),
+                'last_page' => $users->lastPage(),
+            ]
         ]);
+
     }
 
     public function show(User $user)
@@ -132,16 +144,15 @@ class UserController extends Controller
             'activities.*' => 'exists:activities,id',
         ]);
 
-        if (isset($validated['password']) && $validated['password']) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
-        }
-
+        // Tomamos todos los datos del request
         $data = $request->all();
 
-        if($validated['password'] == ""){
+        // Si viene password vacía o nula, la eliminamos
+        if (!isset($data['password']) || $data['password'] === '') {
             unset($data['password']);
+        } else {
+            // Si viene con texto, la encriptamos
+            $data['password'] = Hash::make($data['password']);
         }
 
         $user->update($data);
