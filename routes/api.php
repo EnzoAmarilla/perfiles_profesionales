@@ -26,6 +26,7 @@ Route::middleware('auth:api')->group(function () {
     // ABM usuarios y perfiles (protegido)
     Route::resource('activities', ActivityController::class);
     Route::resource('users', UserController::class);
+    Route::post('/users/{user}/profile_picture', [UserController::class, 'uploadProfilePicture']);
 
     Route::prefix('questions')->group(function () {
         Route::get('/', [QuestionController::class, 'index']);

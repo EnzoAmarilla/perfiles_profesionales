@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -109,7 +110,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        return response()->json(["data" => $user->load(['userType', 'activities', 'locality.province'])]);
+        return response()->json(["data" => $user->load(['userType', 'activities', 'locality.province', 'questions', 'reviews'])]);
     }
 
     public function store(Request $request)
@@ -192,4 +193,30 @@ class UserController extends Controller
         $types = DocumentType::where('disabled', false)->get(['id', 'code', 'name', 'description']);
         return response()->json(["data" => $types]);
     }
+
+    public function uploadProfilePicture(Request $request, User $user)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:2048', // 2MB máx
+        ]);
+
+        // Eliminar imagen anterior si existe
+        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
+        // Guardar nueva imagen
+        $path = $request->file('photo')->store('profile_pictures', 'public');
+
+        // Guardar en DB
+        $user->profile_picture = $path;
+        $user->save();
+
+        // Retornar URL pública
+        return response()->json([
+            'message' => 'Foto actualizada correctamente',
+            'photo_url' => asset('storage/' . $path),
+        ], 200);
+    }
+
 }
