@@ -18,8 +18,9 @@ Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::get('/professionals', [UserController::class, 'professionals']);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::post('logout', [AuthController::class, 'logout']);
 
@@ -43,5 +44,4 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/{id}', [ReviewController::class, 'update']);
         Route::delete('/{id}', [ReviewController::class, 'destroy']);
     });
-
 });
