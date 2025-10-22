@@ -19,6 +19,7 @@ Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::get('/professionals', [UserController::class, 'professionals']);
+Route::get('/professionals/{professional}', [UserController::class, 'show_professionals']);
 
 Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function () {
     Route::get('me', [AuthController::class, 'me']);

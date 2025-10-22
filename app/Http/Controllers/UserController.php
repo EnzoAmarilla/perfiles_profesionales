@@ -189,6 +189,11 @@ class UserController extends Controller
     {
         return response()->json(["data" => $user->load(['userType', 'activities', 'locality.province', 'questions', 'reviews'])]);
     }
+ 
+    public function show_professionals(User $professional)
+    {
+        return response()->json(["data" => $professional->load(['userType', 'activities', 'locality.province', 'questions', 'reviews'])]);
+    }
 
     public function store(Request $request)
     {
