@@ -15,6 +15,7 @@ Route::get('/countries', [LocationController::class, 'getCountries']);
 Route::get('/states', [LocationController::class, 'getStates']);
 Route::get('/localities', [LocationController::class, 'getLocalities']);
 Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
+Route::get('/common/activities', [ActivityController::class, 'index']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');

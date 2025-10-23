@@ -19,7 +19,14 @@ class ActivityController extends Controller
         $page  = $request->get('page');
         $limit = $request->get('limit');
 
-        $activities = $query->orderBy('name')->paginate($limit, ['*'], 'page', $page);
+        $activities = $query->orderBy('name');
+
+        if($page && $limit){
+            $activities = $activities->paginate($limit, ['*'], 'page', $page);
+        }else{
+            $activities = $activities->get();
+            return response()->json(["data" => $activities]);
+        }
 
         return response()->json([
             'data' => $activities->items(),

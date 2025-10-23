@@ -24,6 +24,9 @@ class AuthController extends Controller
 
         $user = User::create($request->all());
 
+        if (!empty($request['activities'])) {
+            $user->activities()->sync($request['activities']);
+        }
         // Generar token JWT automáticamente
         // $token = auth('api')->login($user);
 
