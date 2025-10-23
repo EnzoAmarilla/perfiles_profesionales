@@ -13,33 +13,25 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-            'profile_picture' => 'nullable|string',
+            'password' => 'required|string|min:6',
             'description' => 'nullable|string',
             'user_type_id' => 'required|exists:user_types,id',
             'locality_id' => 'nullable|exists:localities,id',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'profile_picture' => $validated['profile_picture'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'user_type_id' => $validated['user_type_id'],
-            'locality_id' => $validated['locality_id'] ?? null,
-        ]);
+        $user = User::create($request->all());
 
         // Generar token JWT automáticamente
-        $token = auth('api')->login($user);
+        // $token = auth('api')->login($user);
 
         return response()->json([
             'message' => 'Usuario registrado correctamente',
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => (int) auth('api')->factory()->getTTL() * 60,
+            // 'access_token' => $token,
+            // 'token_type' => 'bearer',
+            // 'expires_in' => (int) auth('api')->factory()->getTTL() * 60,
             'user' => $user->load(['userType', 'locality']),
         ], 201);
     }
