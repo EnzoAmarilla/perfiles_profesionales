@@ -17,6 +17,8 @@ class Review extends Model
         'answer',
         'published',
         'user_id',
+        'title',
+        'proyect_type',
     ];
 
     public function user()

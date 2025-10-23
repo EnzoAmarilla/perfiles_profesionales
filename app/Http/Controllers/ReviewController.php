@@ -42,6 +42,8 @@ class ReviewController extends Controller
             'value' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
             'user_id' => 'required|exists:users,id',
+            'title' => 'nullable|string',
+            'proyect_type' => 'nullable|string',
         ]);
 
         $review = Review::create($validated);

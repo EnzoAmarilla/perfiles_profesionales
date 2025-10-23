@@ -21,6 +21,7 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::get('/professionals', [UserController::class, 'professionals']);
 Route::get('/professionals/{professional}', [UserController::class, 'show_professionals']);
 Route::post('/common/questions', [QuestionController::class, 'store']);
+Route::post('/common/reviews', [ReviewController::class, 'store']);
 
 Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
