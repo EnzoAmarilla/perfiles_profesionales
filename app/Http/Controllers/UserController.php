@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     // public function index()
     // {
-    //     $users = User::with(['userType', 'activities', 'locality.province'])->get();
+    //     $users = User::with(['userType', 'activities', 'locality.state'])->get();
     //     return response()->json(["data" => $users]);
     // }
 
@@ -165,12 +165,12 @@ class UserController extends Controller
     
     public function show(User $user)
     {
-        return response()->json(["data" => $user->load(['userType', 'activities', 'locality.province', 'questions', 'reviews'])]);
+        return response()->json(["data" => $user->load(['userType', 'activities', 'locality.state', 'questions', 'reviews'])]);
     }
  
     public function show_professionals(User $professional)
     {
-        return response()->json(["data" => $professional->load(['userType', 'activities', 'locality.province', 'questions', 'reviews'])]);
+        return response()->json(["data" => $professional->load(['userType', 'activities', 'locality.state', 'questions', 'reviews'])]);
     }
 
     public function store(Request $request)
@@ -196,7 +196,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Usuario creado correctamente',
-            'data' => $user->load(['userType', 'activities', 'locality.province']),
+            'data' => $user->load(['userType', 'activities', 'locality.state']),
         ], 201);
     }
 
@@ -232,7 +232,7 @@ class UserController extends Controller
         
         return response()->json([
             'message' => 'Usuario actualizado correctamente',
-            'data' => $user->load(['userType', 'activities', 'locality.province']),
+            'data' => $user->load(['userType', 'activities', 'locality.state']),
         ]);
     }
 
