@@ -115,8 +115,16 @@ class UserController extends Controller
                 ->withCount('reviews')            // cantidad total de reviews
                 ->withAvg('reviews', 'value');    // promedio de valoraciones (campo value en la tabla reviews);
 
+        // --- FILTRO POR NOMBRE (name) ---
+        if ($request->filled('name')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->name . '%')
+                ->orWhere('last_name', 'like', '%' . $request->name . '%');
+            });
+        }
+
         // --- FILTRO POR ACTIVIDAD ---
-         if ($request->filled('activity')) {
+        if ($request->filled('activity')) {
             $activityName = strtolower($request->get('activity')); // convertimos a minúsculas
 
             $query->whereHas('activities', function ($q) use ($activityName) {
@@ -124,6 +132,11 @@ class UserController extends Controller
             });
         }
 
+        // --- ORDEN POR VALORIZACIÓN ---
+        // Primero por promedio de valoraciones (más alto primero),
+        // luego por cantidad de reviews (más alto primero) para desempatar.
+        $query->orderByDesc('reviews_avg_value')
+                ->orderByDesc('reviews_count');
 
         // --- PAGINACIÓN ---
         $page  = $request->get('page');     // página actual (default 1)
