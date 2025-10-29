@@ -68,6 +68,7 @@ class QuestionController extends Controller
         $question = Question::findOrFail($id);
 
         $validated = $request->validate([
+            'message' => 'nullable|string',
             'answer' => 'nullable|string',
             'published' => 'nullable|boolean',
         ]);

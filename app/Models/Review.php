@@ -21,6 +21,10 @@ class Review extends Model
         'proyect_type',
     ];
 
+    protected $casts = [
+        'published' => 'boolean',
+    ];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
