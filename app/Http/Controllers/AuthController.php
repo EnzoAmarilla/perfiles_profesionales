@@ -46,7 +46,21 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request)
+    public function professional_login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => ['required','email'],
+            'password' => ['required','string']
+        ]);
+
+        if (! $token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Credenciales inválidas'], 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    public function admin_login(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required','email'],

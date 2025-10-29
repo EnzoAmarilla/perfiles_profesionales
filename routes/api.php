@@ -18,7 +18,8 @@ Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
 Route::get('/common/activities', [ActivityController::class, 'index']);
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('professionals/login', [AuthController::class, 'professional_login'])->name('professional_login');
+Route::post('login', [AuthController::class, 'admin_login'])->name('login');
 Route::get('/professionals', [UserController::class, 'professionals']);
 Route::get('/professionals/{professional}', [UserController::class, 'show_professionals']);
 Route::post('/common/questions', [QuestionController::class, 'store']);
