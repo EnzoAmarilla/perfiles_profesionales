@@ -9,22 +9,29 @@ class ActivityController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::query();
+        $query = Activity::query()
+            ->whereHas('users', function ($q) {
+                $q->where('user_type_id', 2); // solo actividades con profesionales asociados
+            });
 
+        // --- FILTRO POR NOMBRE ---
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        // Paginación con valores por defecto
+        // --- ORDEN Y CONTEO ---
+        $query->withCount(['users as professionals_count' => function ($q) {
+            $q->where('user_type_id', 2); // contamos solo los profesionales
+        }])->orderBy('name');
+
+        // --- PAGINACIÓN ---
         $page  = $request->get('page');
         $limit = $request->get('limit');
 
-        $activities = $query->orderBy('name');
-
-        if($page && $limit){
-            $activities = $activities->paginate($limit, ['*'], 'page', $page);
-        }else{
-            $activities = $activities->get();
+        if ($page && $limit) {
+            $activities = $query->paginate($limit, ['*'], 'page', $page);
+        } else {
+            $activities = $query->get();
             return response()->json(["data" => $activities]);
         }
 
