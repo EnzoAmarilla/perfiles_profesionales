@@ -279,4 +279,20 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function setActiveStatus(Request $request, $id)
+    {
+        $request->validate([
+            'is_active' => 'required|boolean'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->is_active = $request->is_active;
+        $user->save();
+
+        return response()->json([
+            'message' => $user->is_active ? 'Usuario activado.' : 'Usuario desactivado.',
+            'data' => $user
+        ]);
+    }
+
 }

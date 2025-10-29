@@ -41,6 +41,7 @@ class User extends Authenticatable implements JWTSubject
         'floor',
         'apartment',
         'zone',
+        'is_active',
     ];
 
 
@@ -64,6 +65,7 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 

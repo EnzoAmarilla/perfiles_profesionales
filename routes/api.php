@@ -33,6 +33,7 @@ Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function
     Route::resource('activities', ActivityController::class);
     Route::resource('users', UserController::class);
     Route::post('/users/{user}/profile_picture', [UserController::class, 'uploadProfilePicture']);
+    Route::post('/users/{id}/change-status', [UserController::class, 'setActiveStatus']);
 
     Route::prefix('questions')->group(function () {
         Route::get('/', [QuestionController::class, 'index']);
