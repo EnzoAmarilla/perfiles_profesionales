@@ -67,6 +67,7 @@ class ReviewController extends Controller
         $review = Review::findOrFail($id);
 
         $validated = $request->validate([
+            'comment' => 'nullable|string',
             'answer' => 'nullable|string',
             'published' => 'nullable|boolean',
         ]);
