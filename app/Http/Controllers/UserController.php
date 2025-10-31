@@ -334,4 +334,20 @@ class UserController extends Controller
 
         return response()->json(["data" => $user]);
     }
+
+    public function professionals_respond_review(Request $request, $id)
+    {
+        $review = Review::findOrFail($id);
+
+        $validated = $request->validate([
+            'answer' => 'nullable|string',
+        ]);
+
+        $review->update($validated);
+
+        return response()->json([
+            'message' => 'Valoración actualizada exitosamente',
+            'data' => $review,
+        ]);
+    }
 }
