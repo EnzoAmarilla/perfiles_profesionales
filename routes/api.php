@@ -56,5 +56,5 @@ Route::middleware('auth:api', 'role:Profesional')->group(function () {
     Route::get('/professionals/get/reviews', [UserController::class, 'get_reviews_professional']);
     Route::get('/professionals/get/questions', [UserController::class, 'get_questions_professional']);
     Route::get('/professionals/get/detail', [UserController::class, 'get_professional_detail']);
-    Route::post('/professionals/respond/review', [UserController::class, 'professionals_respond_review']);
+    Route::post('/professionals/respond/review/{review_id}', [UserController::class, 'professionals_respond_review']);
 });
