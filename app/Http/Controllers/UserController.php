@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentType;
+use App\Models\Question;
 use App\Models\Review;
 use App\Models\User;
 use App\Models\UserType;
@@ -300,6 +301,21 @@ class UserController extends Controller
     public function get_reviews_professional(Request $request)
     {
         $query = Review::with('user')->where('user_id', Auth::user()->id);
+
+        if ($request->limit) {
+            $query->limit($request->limit);
+        }
+
+        $reviews = $query->orderBy('id', 'DESC')->get();
+
+        return response()->json([
+            'data' => $reviews
+        ]);
+    }
+
+    public function get_questions_professional(Request $request)
+    {
+        $query = Question::with('user')->where('user_id', Auth::user()->id);
 
         if ($request->limit) {
             $query->limit($request->limit);
