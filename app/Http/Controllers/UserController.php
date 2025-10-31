@@ -350,4 +350,20 @@ class UserController extends Controller
             'data' => $review,
         ]);
     }
+
+    public function professionals_respond_question(Request $request, $id)
+    {
+        $question = Question::findOrFail($id);
+
+        $validated = $request->validate([
+            'answer' => 'nullable|string',
+        ]);
+
+        $question->update($validated);
+
+        return response()->json([
+            'message' => 'Comentario actualizado exitosamente',
+            'data' => $question,
+        ]);
+    }
 }
