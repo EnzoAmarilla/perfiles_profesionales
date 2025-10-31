@@ -60,9 +60,9 @@ class AuthController extends Controller
         $user = auth('api')->user();
 
         // Calcular datos requeridos
-        $promedio_reviews = round($user->reviews()->avg('value') ?? 0, 2);
-        $cantidad_reviews = $user->reviews()->count();
-        $preguntas_pendientes = $user->questions()
+        $rates_average = round($user->reviews()->avg('value') ?? 0, 2);
+        $rates_count = $user->reviews()->count();
+        $unanswered_questions = $user->questions()
             ->whereNull('answer')
             ->count();
 
@@ -74,9 +74,14 @@ class AuthController extends Controller
             'expires_in' => $expire_in * 60,
             'user' => [
                 'id' => $user->id,
-                'promedio_reviews' => $promedio_reviews,
-                'cantidad_reviews' => $cantidad_reviews,
-                'preguntas_pendientes' => $preguntas_pendientes,
+                'username' => $user->username,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'profile_picture' => $user->profile_picture,
+                'rates_count' => $rates_count,
+                'rates_average' => $rates_average,
+                'unanswered_questions' => $unanswered_questions,
             ]
         ]);
     }
