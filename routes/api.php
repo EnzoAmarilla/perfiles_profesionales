@@ -58,4 +58,5 @@ Route::middleware('auth:api', 'role:Profesional')->group(function () {
     Route::get('/professionals/get/detail', [UserController::class, 'get_professional_detail']);
     Route::put('/professionals/respond/review/{review_id}', [UserController::class, 'professionals_respond_review']);
     Route::put('/professionals/respond/question/{question_id}', [UserController::class, 'professionals_respond_question']);
+    Route::put('/professionals/update_profile', [UserController::class, 'professional_update_profile']);
 });

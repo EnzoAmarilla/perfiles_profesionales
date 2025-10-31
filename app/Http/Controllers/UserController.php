@@ -366,4 +366,42 @@ class UserController extends Controller
             'data' => $question,
         ]);
     }
+
+    public function professional_update_profile(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+
+        $validated = $request->validate([
+            'email' => ['sometimes','email',Rule::unique('users')->ignore($user->id)],
+            'password' => 'nullable|string|min:6',
+            'profile_picture' => 'nullable|string',
+            'description' => 'nullable|string',
+            'user_type_id' => 'sometimes|exists:user_types,id',
+            'locality_id' => 'nullable|exists:localities,id',
+            'activities' => 'nullable|array',
+            'activities.*' => 'exists:activities,id',
+        ]);
+
+        // Tomamos todos los datos del request
+        $data = $request->all();
+
+        // Si viene password vacía o nula, la eliminamos
+        if (!isset($data['password']) || $data['password'] === '') {
+            unset($data['password']);
+        } else {
+            // Si viene con texto, la encriptamos
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($data);
+
+        if (isset($validated['activities'])) {
+            $user->activities()->sync($validated['activities']);
+        }
+        
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
+            'data' => $user->load(['userType', 'activities', 'locality.state']),
+        ]);
+    }
 }
