@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DocumentType;
+use App\Models\Review;
 use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -295,4 +297,12 @@ class UserController extends Controller
         ]);
     }
 
+    public function get_reviews_professional(Request $request)
+    {
+        $reviews = Review::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->get();
+
+        return response()->json([
+            'data' => $reviews
+        ]);
+    }
 }

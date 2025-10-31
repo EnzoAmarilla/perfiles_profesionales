@@ -51,3 +51,7 @@ Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function
         Route::delete('/{id}', [ReviewController::class, 'destroy']);
     });
 });
+
+Route::middleware('auth:api', 'role:Profesional')->group(function () {
+    Route::get('/professionals/get/reviews', [UserController::class, 'get_reviews_professional']);
+});
