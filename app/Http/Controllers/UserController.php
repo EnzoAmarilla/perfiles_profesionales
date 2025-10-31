@@ -299,7 +299,13 @@ class UserController extends Controller
 
     public function get_reviews_professional(Request $request)
     {
-        $reviews = Review::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->get();
+        $query = Review::with('user')->where('user_id', Auth::user()->id);
+
+        if ($request->limit) {
+            $query->limit($request->limit);
+        }
+
+        $reviews = $query->orderBy('id', 'DESC')->get();
 
         return response()->json([
             'data' => $reviews
