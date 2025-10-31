@@ -327,4 +327,11 @@ class UserController extends Controller
             'data' => $reviews
         ]);
     }
+
+    public function get_professional_detail()
+    {
+        $user = User::with(['userType', 'activities', 'locality.state'])->find(Auth::id());
+
+        return response()->json(["data" => $user]);
+    }
 }
