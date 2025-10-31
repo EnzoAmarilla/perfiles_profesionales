@@ -49,15 +49,36 @@ class AuthController extends Controller
     public function professional_login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required','email'],
-            'password' => ['required','string']
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string']
         ]);
 
         if (! $token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
 
-        return $this->respondWithToken($token);
+        $user = auth('api')->user();
+
+        // Calcular datos requeridos
+        $promedio_reviews = round($user->reviews()->avg('value') ?? 0, 2);
+        $cantidad_reviews = $user->reviews()->count();
+        $preguntas_pendientes = $user->questions()
+            ->whereNull('answer')
+            ->count();
+
+        $expire_in = config('jwt.ttl');
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => $expire_in * 60,
+            'user' => [
+                'id' => $user->id,
+                'promedio_reviews' => $promedio_reviews,
+                'cantidad_reviews' => $cantidad_reviews,
+                'preguntas_pendientes' => $preguntas_pendientes,
+            ]
+        ]);
     }
 
     public function admin_login(Request $request)
