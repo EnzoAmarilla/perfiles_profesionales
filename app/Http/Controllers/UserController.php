@@ -282,6 +282,33 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function uploadProfilePictureProfessional(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:2048', // 2MB máx
+        ]);
+
+        // Eliminar imagen anterior si existe
+        if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
+        // Guardar nueva imagen
+        $path = $request->file('photo')->store('profile_pictures', 'public');
+
+        // Guardar en DB
+        $user->profile_picture = $path;
+        $user->save();
+
+        // Retornar URL pública
+        return response()->json([
+            'message' => 'Foto actualizada correctamente',
+            'photo_url' => asset($path),
+        ], 200);
+    }
+
     public function setActiveStatus(Request $request, $id)
     {
         $request->validate([
