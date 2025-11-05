@@ -23,14 +23,33 @@ class ReviewController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('comment', 'like', '%' . $request->search . '%');
+                ->orWhere('email', 'like', '%' . $request->search . '%')
+                ->orWhere('comment', 'like', '%' . $request->search . '%');
             });
         }
 
-        return response()->json([
-            'data' => $query->orderBy('created_at', 'desc')->get()
-        ]);
+        // --- PAGINACIÓN OPCIONAL ---
+        $page  = $request->get('page');   // página (default null = sin paginar)
+        $limit = $request->get('limit');  // por página (default null = sin paginar)
+
+        $reviews = $query->orderBy('created_at', 'desc');
+
+        if ($page && $limit) {
+            $reviews = $reviews->paginate($limit, ['*'], 'page', $page);
+
+            return response()->json([
+                'data' => $reviews->items(),
+                'pagination' => [
+                    'current_page' => $reviews->currentPage(),
+                    'per_page' => $reviews->perPage(),
+                    'total' => $reviews->total(),
+                    'last_page' => $reviews->lastPage(),
+                ]
+            ]);
+        } else {
+            $reviews = $reviews->get();
+            return response()->json(["data" => $reviews]);
+        }
     }
 
     // Crear nueva valorización
