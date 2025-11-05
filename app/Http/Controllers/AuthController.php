@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Facades\JWTFactory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -121,5 +125,66 @@ class AuthController extends Controller
             'expires_in' => $expire_in * 60, // segundos,
             'user' => auth('api')->user()->load(['userType', 'locality'])
         ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'No existe un usuario con ese correo'], 404);
+        }
+
+        // Generamos token y lo guardamos manualmente (tabla password_reset_tokens)
+        $token = Str::random(60);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]
+        );
+
+        // Aquí podrías enviar correo real con Mail::to($user->email)->send(new ResetPasswordMail($token));
+
+
+        // Por ahora solo devolvemos el token (para test desde Postman)
+        return response()->json([
+            'message' => 'Token de recuperación generado',
+            'reset_token' => $token
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where([
+            'email' => $request->email,
+            'token' => $request->token
+        ])->first();
+
+        if (!$record) {
+            return response()->json(['error' => 'Token inválido o expirado'], 400);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Eliminamos el token usado
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
 }

@@ -52,6 +52,10 @@ Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function
     });
 });
 
+// Recuperar contraseña (envío de correo y cambio directo)
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+
 Route::middleware('auth:api', 'role:Profesional')->group(function () {
     Route::get('/professionals/get/reviews', [UserController::class, 'get_reviews_professional']);
     Route::get('/professionals/get/questions', [UserController::class, 'get_questions_professional']);
