@@ -135,6 +135,16 @@ class UserController extends Controller
             });
         }
 
+        if ($request->filled('locality_id')) {
+            $query->where('locality_id', $request->locality_id);
+        }
+
+        if ($request->filled('state_id')) {
+            $query->whereHas('locality.state', function ($q) use ($request) {
+                $q->where('id', $request->state_id);
+            });
+        }
+
         // --- ORDEN POR VALORIZACIÓN ---
         // Primero por promedio de valoraciones (más alto primero),
         // luego por cantidad de reviews (más alto primero) para desempatar.
