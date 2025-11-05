@@ -23,18 +23,33 @@ class QuestionController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('message', 'like', '%' . $request->search . '%');
+                ->orWhere('email', 'like', '%' . $request->search . '%')
+                ->orWhere('message', 'like', '%' . $request->search . '%');
             });
         }
 
-        // if ($request->filled('message')) {
-        //     $query->where('message', 'like', '%' . $request->message . '%');
-        // }
+        // --- PAGINACIÓN OPCIONAL ---
+        $page  = $request->get('page');   // página actual
+        $limit = $request->get('limit');  // cantidad por página
 
-        return response()->json([
-            'data' => $query->orderBy('created_at', 'desc')->get()
-        ]);
+        $comments = $query->orderBy('created_at', 'desc');
+
+        if ($page && $limit) {
+            $comments = $comments->paginate($limit, ['*'], 'page', $page);
+
+            return response()->json([
+                'data' => $comments->items(),
+                'pagination' => [
+                    'current_page' => $comments->currentPage(),
+                    'per_page' => $comments->perPage(),
+                    'total' => $comments->total(),
+                    'last_page' => $comments->lastPage(),
+                ]
+            ]);
+        } else {
+            $comments = $comments->get();
+            return response()->json(["data" => $comments]);
+        }
     }
 
     // Crear nueva pregunta
