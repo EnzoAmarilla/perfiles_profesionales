@@ -335,34 +335,63 @@ class UserController extends Controller
         ]);
     }
 
-    public function get_reviews_professional(Request $request)
+    public function get_reviews_professional(Request $request) 
     {
-        $query = Review::with('user')->where('user_id', Auth::user()->id);
+        $query = Review::with('user')
+            ->where('user_id', Auth::id());
 
-        if ($request->limit) {
-            $query->limit($request->limit);
+        // --- PAGINACIÓN OPCIONAL ---
+        $page  = $request->get('page');   // página actual
+        $limit = $request->get('limit');  // cantidad por página
+
+        $reviews = $query->orderBy('id', 'DESC');
+
+        if ($page && $limit) {
+            $reviews = $reviews->paginate($limit, ['*'], 'page', $page);
+
+            return response()->json([
+                'data' => $reviews->items(),
+                'pagination' => [
+                    'current_page' => $reviews->currentPage(),
+                    'per_page' => $reviews->perPage(),
+                    'total' => $reviews->total(),
+                    'last_page' => $reviews->lastPage(),
+                ]
+            ]);
+        } else {
+            // Si no se envía paginación → traer todo
+            $reviews = $reviews->get();
+            return response()->json(["data" => $reviews]);
         }
-
-        $reviews = $query->orderBy('id', 'DESC')->get();
-
-        return response()->json([
-            'data' => $reviews
-        ]);
     }
 
     public function get_questions_professional(Request $request)
     {
-        $query = Question::with('user')->where('user_id', Auth::user()->id);
+        $query = Question::with('user')
+            ->where('user_id', Auth::id());
 
-        if ($request->limit) {
-            $query->limit($request->limit);
+        // --- PAGINACIÓN OPCIONAL ---
+        $page  = $request->get('page'); 
+        $limit = $request->get('limit');
+
+        $questions = $query->orderBy('id', 'DESC');
+
+        if ($page && $limit) {
+            $questions = $questions->paginate($limit, ['*'], 'page', $page);
+
+            return response()->json([
+                'data' => $questions->items(),
+                'pagination' => [
+                    'current_page' => $questions->currentPage(),
+                    'per_page' => $questions->perPage(),
+                    'total' => $questions->total(),
+                    'last_page' => $questions->lastPage(),
+                ]
+            ]);
+        } else {
+            $questions = $questions->get();
+            return response()->json(["data" => $questions]);
         }
-
-        $reviews = $query->orderBy('id', 'DESC')->get();
-
-        return response()->json([
-            'data' => $reviews
-        ]);
     }
 
     public function get_professional_detail()
