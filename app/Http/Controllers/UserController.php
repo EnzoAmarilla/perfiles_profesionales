@@ -114,31 +114,50 @@ class UserController extends Controller
     public function professionals(Request $request)
     {
         $query = User::with(['userType', 'activities', 'locality.state'])
-                ->where('user_type_id', 2)            // solo profesionales
-                ->withCount('reviews')            // cantidad total de reviews
-                ->withAvg('reviews', 'value');    // promedio de valoraciones (campo value en la tabla reviews);
+            ->where('user_type_id', 2) // solo profesionales
+            ->withCount('reviews')
+            ->withAvg('reviews', 'value'); // promedio de valoraciones
 
-        // --- FILTRO POR NOMBRE (name) ---
-        if ($request->filled('name')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('first_name', 'like', '%' . $request->name . '%')
-                ->orWhere('last_name', 'like', '%' . $request->name . '%');
+        // --- FILTRO GLOBAL DE BÚSQUEDA ---
+        if ($request->filled('search')) {
+            $search = strtolower($request->search);
+
+            $query->where(function ($q) use ($search) {
+                // nombre o apellido
+                $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$search}%"])
+                ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$search}%"])
+
+                // localidad
+                ->orWhereHas('locality', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                })
+
+                // provincia
+                ->orWhereHas('locality.state', function ($q3) use ($search) {
+                    $q3->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
+                })
+
+                // actividad
+                ->orWhereHas('activities', function ($q4) use ($search) {
+                    $q4->whereRaw('LOWER(activities.name) LIKE ?', ["%{$search}%"]);
+                });
             });
         }
 
-        // --- FILTRO POR ACTIVIDAD ---
-        if ($request->filled('activity')) {
-            $activityName = strtolower($request->get('activity')); // convertimos a minúsculas
-
-            $query->whereHas('activities', function ($q) use ($activityName) {
-                $q->whereRaw('LOWER(activities.name) LIKE ?', ["%{$activityName}%"]);
+        // --- FILTRO POR ACTIVIDAD (ID) ---
+        if ($request->filled('activity_id')) {
+            $activityId = $request->get('activity_id');
+            $query->whereHas('activities', function ($q) use ($activityId) {
+                $q->where('activities.id', $activityId);
             });
         }
 
+        // --- FILTRO POR LOCALIDAD ---
         if ($request->filled('locality_id')) {
             $query->where('locality_id', $request->locality_id);
         }
 
+        // --- FILTRO POR PROVINCIA ---
         if ($request->filled('state_id')) {
             $query->whereHas('locality.state', function ($q) use ($request) {
                 $q->where('id', $request->state_id);
@@ -146,36 +165,35 @@ class UserController extends Controller
         }
 
         // --- ORDEN POR VALORIZACIÓN ---
-        // Primero por promedio de valoraciones (más alto primero),
-        // luego por cantidad de reviews (más alto primero) para desempatar.
         $query->orderByDesc('reviews_avg_value')
-                ->orderByDesc('reviews_count');
+            ->orderByDesc('reviews_count');
 
         // --- PAGINACIÓN ---
-        $page  = $request->get('page');     // página actual (default 1)
-        $limit = $request->get('limit');   // cantidad por página (default 10)
+        $page  = $request->get('page');
+        $limit = $request->get('limit');
 
-        
         $users = $query->orderBy('id', 'desc');
 
-        if($page && $limit){
+        if ($page && $limit) {
             $users = $users->paginate($limit, ['*'], 'page', $page);
-        }else{
-            $users = $users->get();
-            return response()->json(["data" => $users]);
+
+            return response()->json([
+                'data' => $users->items(),
+                'pagination' => [
+                    'current_page' => $users->currentPage(),
+                    'per_page' => $users->perPage(),
+                    'total' => $users->total(),
+                    'last_page' => $users->lastPage(),
+                ]
+            ]);
         }
 
-        return response()->json([
-            'data' => $users->items(),
-            'pagination' => [
-                'current_page' => $users->currentPage(),
-                'per_page' => $users->perPage(),
-                'total' => $users->total(),
-                'last_page' => $users->lastPage(),
-            ]
-        ]);
+        // Si no hay paginación
+        $users = $users->get();
+
+        return response()->json(["data" => $users]);
     }
-    
+
     public function show(User $user)
     {
         return response()->json(["data" => $user->load(['userType', 'activities', 'locality.state', 'questions', 'reviews'])]);
@@ -405,6 +423,10 @@ class UserController extends Controller
     {
         $review = Review::findOrFail($id);
 
+        // validar que solamente el usuario prof dueño pueda contestar
+        if($review->user_id != Auth::user()->id)
+            return response()->json(['message' => 'Usuario no authorizado'], 400);
+        
         $validated = $request->validate([
             'answer' => 'nullable|string',
         ]);
