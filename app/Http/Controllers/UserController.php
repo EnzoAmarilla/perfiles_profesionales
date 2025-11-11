@@ -115,6 +115,7 @@ class UserController extends Controller
     {
         $query = User::with(['userType', 'activities', 'locality.state'])
             ->where('user_type_id', 2) // solo profesionales
+            ->where('is_active', 1) // solo activos
             ->withCount('reviews')
             ->withAvg('reviews', 'value'); // promedio de valoraciones
 
