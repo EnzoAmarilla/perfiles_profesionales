@@ -22,10 +22,7 @@ Route::group(['prefix' => 'common'], function () {
 });
 
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('professionals/login', [AuthController::class, 'professional_login'])->name('professional_login');
 Route::post('login', [AuthController::class, 'admin_login'])->name('login');
-Route::get('/professionals', [UserController::class, 'professionals']);
-Route::get('/professionals/{professional}', [UserController::class, 'show_professionals']);
 
 Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
@@ -58,12 +55,20 @@ Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-Route::middleware('auth:api', 'role:Profesional')->group(function () {
-    Route::get('/professionals/get/reviews', [UserController::class, 'get_reviews_professional']);
-    Route::get('/professionals/get/questions', [UserController::class, 'get_questions_professional']);
-    Route::get('/professionals/get/detail', [UserController::class, 'get_professional_detail']);
-    Route::put('/professionals/respond/review/{review_id}', [UserController::class, 'professionals_respond_review']);
-    Route::put('/professionals/respond/question/{question_id}', [UserController::class, 'professionals_respond_question']);
-    Route::put('/professionals/update_profile', [UserController::class, 'professional_update_profile']);
-    Route::post('/professionals/update_profile_picture', [UserController::class, 'uploadProfilePictureProfessional']);
+Route::group(['prefix' => 'professionals'], function () {
+    Route::post('/login', [AuthController::class, 'professional_login'])->name('professional_login');
+    Route::get('/', [UserController::class, 'professionals']);
+    Route::get('/{professional}', [UserController::class, 'show_professionals']);
+    Route::get('/{professional}/get/reviews', [UserController::class, 'get_reviews_professional']);
+    Route::get('/{professional}/get/questions', [UserController::class, 'get_questions_professional']);
+
+    Route::middleware('auth:api', 'role:Profesional')->group(function () {
+        Route::get('/get/reviews', [UserController::class, 'get_reviews_professional']);
+        Route::get('/get/questions', [UserController::class, 'get_questions_professional']);
+        Route::get('/get/detail', [UserController::class, 'get_professional_detail']);
+        Route::put('/respond/review/{review_id}', [UserController::class, 'professionals_respond_review']);
+        Route::put('/respond/question/{question_id}', [UserController::class, 'professionals_respond_question']);
+        Route::put('/update_profile', [UserController::class, 'professional_update_profile']);
+        Route::post('/update_profile_picture', [UserController::class, 'uploadProfilePictureProfessional']);
+    });
 });

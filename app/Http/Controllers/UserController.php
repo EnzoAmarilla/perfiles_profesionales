@@ -354,10 +354,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function get_reviews_professional(Request $request) 
+    public function get_reviews_professional(Request $request, $professional = null) 
     {
-        $query = Review::with('user')
-            ->where('user_id', Auth::id());
+        $query = Review::with('user')->where('user_id', $professional ?? Auth::id());
 
         // --- PAGINACIÓN OPCIONAL ---
         $page  = $request->get('page');   // página actual
@@ -384,10 +383,9 @@ class UserController extends Controller
         }
     }
 
-    public function get_questions_professional(Request $request)
+    public function get_questions_professional(Request $request, $professional = null)
     {
-        $query = Question::with('user')
-            ->where('user_id', Auth::id());
+        $query = Question::with('user')->where('user_id', $professional ?? Auth::id());
 
         // --- PAGINACIÓN OPCIONAL ---
         $page  = $request->get('page'); 
