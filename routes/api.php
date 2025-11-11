@@ -9,21 +9,23 @@ use App\Http\Controllers\ProfileUserController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ReviewController;
 
-Route::get('/user-types', [UserController::class, 'getUserTypes']);
-Route::get('/document-types', [UserController::class, 'getDocumentTypes']);
-Route::get('/countries', [LocationController::class, 'getCountries']);
-Route::get('/states', [LocationController::class, 'getStates']);
-Route::get('/localities', [LocationController::class, 'getLocalities']);
-Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
-Route::get('/common/activities', [ActivityController::class, 'index']);
+Route::group(['prefix' => 'common'], function () {
+    Route::get('/user-types', [UserController::class, 'getUserTypes']);
+    Route::get('/document-types', [UserController::class, 'getDocumentTypes']);
+    Route::get('/countries', [LocationController::class, 'getCountries']);
+    Route::get('/states', [LocationController::class, 'getStates']);
+    Route::get('/localities', [LocationController::class, 'getLocalities']);
+    Route::get('/zip-codes', [LocationController::class, 'getZipCodes']);
+    Route::get('/activities', [ActivityController::class, 'index']);
+    Route::post('/questions', [QuestionController::class, 'store']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+});
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('professionals/login', [AuthController::class, 'professional_login'])->name('professional_login');
 Route::post('login', [AuthController::class, 'admin_login'])->name('login');
 Route::get('/professionals', [UserController::class, 'professionals']);
 Route::get('/professionals/{professional}', [UserController::class, 'show_professionals']);
-Route::post('/common/questions', [QuestionController::class, 'store']);
-Route::post('/common/reviews', [ReviewController::class, 'store']);
 
 Route::middleware('auth:api', 'role:Administrador, Profesional')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
